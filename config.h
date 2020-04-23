@@ -1,13 +1,13 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
-static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
-static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
-static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const unsigned int borderpx  = 3;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int gappih    = 20;       /* horiz inner gap between windows */
+static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
+static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 30;       /* vert outer gap between windows and screen edge */
+static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int vertpad            = 0;       /* vertical padding of bar */
@@ -34,25 +34,33 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       1 << 8,            0,           -1 },
-	/* { "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 }, */
+	/* class      instance    title       tags mask     isfloating   isterminal noswallow monitor */
+	{ "Gimp",     NULL,       NULL,       1 << 8,       0,           0,         0,        -1 },
+	{ "St",       NULL,       NULL,       0,            0,           1,         0,        -1 },
 };
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
-
-#include "fibonacci.c"
+#define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
+#include "vanitygaps.c"
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
-	{ "|M|",      centeredmaster },
-	{ ">M>",      centeredfloatingmaster },
- 	{ "[@]",      spiral },
- 	{ "[\\]",      dwindle },
+ 	{ "[]=",	tile },			/* Default: Master on left, slaves on right */
+	{ "TTT",	bstack },		/* Master on top, slaves on bottom */
+
+	{ "[@]",	spiral },		/* Fibonacci spiral */
+	{ "[\\]",	dwindle },		/* Decreasing in size right and leftward */
+
+	{ "H[]",	deck },			/* Master on left, slaves in monocle-like mode on right */
+ 	{ "[M]",	monocle },		/* All windows on top of eachother */
+
+	{ "|M|",	centeredmaster },		/* Master in middle, slaves on sides */
+	{ ">M>",	centeredfloatingmaster },	/* Same but master floats */
+
+	{ "><>",	NULL },			/* no layout function means floating behavior */
+	{ NULL,		NULL },
 };
 
 /* key definitions */
@@ -88,7 +96,7 @@ static Key keys[] = {
 	/* modifier                     key        function        argument */
 	STACKKEYS(MODKEY,                          focus)
 	STACKKEYS(MODKEY|ShiftMask,                push)
-	{ MODKEY|ShiftMask,		XK_Escape,	spawn,	SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Close Xorg?\")\" = Yes ] && killall Xorg") },
+	/* { MODKEY|ShiftMask,		XK_Escape,	spawn,	SHCMD("") }, */
 	{ MODKEY,			XK_grave,	spawn,	SHCMD("dmenuunicode") },
 	/* { MODKEY|ShiftMask,		XK_grave,	togglescratch,	SHCMD("") }, */
 	TAGKEYS(			XK_1,		0)
@@ -102,12 +110,12 @@ static Key keys[] = {
 	TAGKEYS(			XK_9,		8)
 	{ MODKEY,			XK_0,		view,		{.ui = ~0 } },
 	{ MODKEY|ShiftMask,		XK_0,		tag,		{.ui = ~0 } },
-	{ MODKEY,			XK_minus,	spawn,		SHCMD("lmc down") },
-	{ MODKEY|ShiftMask,		XK_minus,	spawn,		SHCMD("lmc down 15") },
-	{ MODKEY,			XK_equal,	spawn,		SHCMD("lmc up") },
-	{ MODKEY|ShiftMask,		XK_equal,	spawn,		SHCMD("lmc up 15") },
-	/* { MODKEY,			XK_BackSpace,	spawn,		SHCMD("") }, */
-	{ MODKEY|ShiftMask,		XK_BackSpace,	spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Reboot computer?\")\" = Yes ] && sudo -A reboot") },
+	{ MODKEY,			XK_minus,	spawn,		SHCMD("pamixer --allow-boost -d 5; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY|ShiftMask,		XK_minus,	spawn,		SHCMD("pamixer --allow-boost -d 15; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY,			XK_equal,	spawn,		SHCMD("pamixer --allow-boost -i 5; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY|ShiftMask,		XK_equal,	spawn,		SHCMD("pamixer --allow-boost -i 15; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY,			XK_BackSpace,	spawn,		SHCMD("sysact") },
+	/* { MODKEY|ShiftMask,		XK_BackSpace,	spawn,		SHCMD("") }, */
 
 	{ MODKEY,			XK_Tab,		spawn, SHCMD("rofi -show window") },
 	{ MODKEY,			XK_s,		spawn, SHCMD("rofi -show ssh") },
@@ -121,13 +129,13 @@ static Key keys[] = {
 	{ MODKEY,			XK_r,		spawn,		SHCMD("alacritty -e lf") },
 	/* { MODKEY|ShiftMask,		XK_r,		spawn,		SHCMD("") }, */
 	{ MODKEY,			XK_t,		setlayout,	{.v = &layouts[0]} },
-	/* { MODKEY|ShiftMask,		XK_t,		spawn,		SHCMD("") }, */
-	{ MODKEY,			XK_y,		setlayout,	{.v = &layouts[4]} },
-	/* { MODKEY|ShiftMask,		XK_y,		spawn,		SHCMD("") }, */
-	{ MODKEY,			XK_u,		setlayout,	{.v = &layouts[2]} },
-	/* { MODKEY|ShiftMask,		XK_u,		spawn,		SHCMD("") }, */
-	{ MODKEY,			XK_i,		setlayout,	{.v = &layouts[3]} },
-	/* { MODKEY|ShiftMask,		XK_i,		spawn,		SHCMD("") }, */
+	{ MODKEY|ShiftMask,		XK_t,		setlayout,	{.v = &layouts[1]} },
+	{ MODKEY,			XK_y,		setlayout,	{.v = &layouts[2]} },
+	{ MODKEY|ShiftMask,		XK_y,		setlayout,	{.v = &layouts[3]} },
+	{ MODKEY,			XK_u,		setlayout,	{.v = &layouts[4]} },
+	{ MODKEY|ShiftMask,		XK_u,		setlayout,	{.v = &layouts[5]} },
+	{ MODKEY,			XK_i,		setlayout,	{.v = &layouts[6]} },
+	{ MODKEY|ShiftMask,		XK_i,		setlayout,	{.v = &layouts[7]} },
 	{ MODKEY,			XK_o,		incnmaster,     {.i = +1 } },
 	{ MODKEY|ShiftMask,		XK_o,		incnmaster,     {.i = -1 } },
 	{ MODKEY,			XK_p,			spawn,		SHCMD("mpc toggle") },
@@ -139,14 +147,15 @@ static Key keys[] = {
 	{ MODKEY,			XK_backslash,		view,		{0} },
 	/* { MODKEY|ShiftMask,		XK_backslash,		spawn,		SHCMD("") }, */
 
-	{ MODKEY,			XK_a,		spawn,		SHCMD("alacritty -e lmc control") },
+	{ MODKEY,			XK_a,		spawn,		SHCMD("pavucontrol") },
+	//{ MODKEY,			XK_a,		spawn,		SHCMD("st -e pulsemixer; kill -44 $(pidof dwmblocks)") },
 	/* { MODKEY|ShiftMask,		XK_a,		spawn,		SHCMD("") }, */
 	{ MODKEY,			XK_s,		togglesticky,	{0} },
 	/* { MODKEY|ShiftMask,		XK_s,		spawn,		SHCMD("") }, */
 	{ MODKEY,			XK_d,		spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,		XK_d,		togglegaps,	{0} },
 	{ MODKEY,			XK_f,		togglefullscr,	{0} },
-	/* { MODKEY|ShiftMask,		XK_f,		togglefullscr,	{0} }, */
+	{ MODKEY|ShiftMask,		XK_f,		setlayout,	{.v = &layouts[8]} },
 	{ MODKEY,			XK_g,		shiftview,	{ .i = -1 } },
 	/* { MODKEY|ShiftMask,		XK_g,		spawn,		SHCMD("") }, */
 	{ MODKEY,			XK_h,		setmfact,	{.f = -0.05} },
@@ -178,12 +187,17 @@ static Key keys[] = {
 	{ 0,			XK_F3,	spawn,		SHCMD("mpc next") },
 	{ MODKEY|ShiftMask,		XK_period,	spawn,		SHCMD("mpc repeat") },
 
+	{ MODKEY,			XK_Left,	focusmon,	{.i = -1 } },
+	{ MODKEY|ShiftMask,		XK_Left,	tagmon,		{.i = -1 } },
+	{ MODKEY,			XK_Right,	focusmon,	{.i = +1 } },
+	{ MODKEY|ShiftMask,		XK_Right,	tagmon,		{.i = +1 } },
+
 	{ MODKEY,			XK_Page_Up,	shiftview,	{ .i = -1 } },
 	{ MODKEY,			XK_Page_Down,	shiftview,	{ .i = 1 } },
 	{ MODKEY,			XK_Insert,	spawn,		SHCMD("notify-send \"📋 Clipboard contents:\" \"$(xclip -o -selection clipboard)\"") },
 
 	{ MODKEY,			XK_F1,		spawn,		SHCMD("groff -mom /usr/local/share/dwm/larbs.mom -Tpdf | zathura -") },
-	{ MODKEY,			XK_F2,		quit,		{0} },
+	{ MODKEY,			XK_F2,		quit,		{1} },
 	{ MODKEY,			XK_F3,		spawn,		SHCMD("displayselect") },
 	{ MODKEY,			XK_F4,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && sudo -A zzz") },
 	{ MODKEY,			XK_F5,		spawn,		SHCMD("xbacklight -5")  },
@@ -204,9 +218,9 @@ static Key keys[] = {
 	{ MODKEY,			XK_Delete,	spawn,		SHCMD("dmenurecord kill") },
 	{ MODKEY,			XK_Scroll_Lock,	spawn,		SHCMD("killall screenkey || screenkey &") },
 
-	{ 0, XF86XK_AudioMute,		spawn,		SHCMD("lmc toggle") },
-	{ 0, XF86XK_AudioRaiseVolume,	spawn,		SHCMD("lmc up") },
-	{ 0, XF86XK_AudioLowerVolume,	spawn,		SHCMD("lmc down") },
+	{ 0, XF86XK_AudioMute,		spawn,		SHCMD("pamixer -t; kill -44 $(pidof dwmblocks)") },
+	{ 0, XF86XK_AudioRaiseVolume,	spawn,		SHCMD("pamixer --allow-boost -i 3; kill -44 $(pidof dwmblocks)") },
+	{ 0, XF86XK_AudioLowerVolume,	spawn,		SHCMD("pamixer --allow-boost -d 3; kill -44 $(pidof dwmblocks)") },
 	{ 0, XF86XK_AudioPrev,		spawn,		SHCMD("mpc prev") },
 	{ 0, XF86XK_AudioNext,		spawn,		SHCMD("mpc next") },
 	{ 0, XF86XK_AudioPause,		spawn,		SHCMD("mpc pause") },
@@ -229,13 +243,14 @@ static Key keys[] = {
 	{ 0, XF86XK_TouchpadToggle,	spawn,		SHCMD("(synclient | grep 'TouchpadOff.*1' && synclient TouchpadOff=0) || synclient TouchpadOff=1") },
 	{ 0, XF86XK_TouchpadOff,	spawn,		SHCMD("synclient TouchpadOff=1") },
 	{ 0, XF86XK_TouchpadOn,		spawn,		SHCMD("synclient TouchpadOff=0") },
-
 	/* { MODKEY,                       XK_space,  setlayout,      {0} }, */
 
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ 0, XF86XK_MonBrightnessUp,	spawn,		SHCMD("xbacklight -inc 15") },
+	{ 0, XF86XK_MonBrightnessDown,	spawn,		SHCMD("xbacklight -dec 15") },
 
 	/* { MODKEY|Mod4Mask,              XK_h,      incrgaps,       {.i = +1 } }, */
 	/* { MODKEY|Mod4Mask,              XK_l,      incrgaps,       {.i = -1 } }, */
@@ -263,7 +278,11 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          SHCMD("alacritty -e statusbarinfo") },
+	{ ClkStatusText,        0,              Button1,        sigdwmblocks,   {.i = 1} },
+	{ ClkStatusText,        0,              Button2,        sigdwmblocks,   {.i = 2} },
+	{ ClkStatusText,        0,              Button3,        sigdwmblocks,   {.i = 3} },
+	{ ClkStatusText,        0,              Button4,        sigdwmblocks,   {.i = 4} },
+	{ ClkStatusText,        0,              Button5,        sigdwmblocks,   {.i = 5} },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
@@ -271,76 +290,6 @@ static Button buttons[] = {
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
-};
-
-void
-setlayoutex(const Arg *arg)
-{
-	setlayout(&((Arg) { .v = &layouts[arg->i] }));
-}
-
-void
-viewex(const Arg *arg)
-{
-	view(&((Arg) { .ui = 1 << arg->ui }));
-}
-
-void
-viewall(const Arg *arg)
-{
-	view(&((Arg){.ui = ~0}));
-}
-
-void
-toggleviewex(const Arg *arg)
-{
-	toggleview(&((Arg) { .ui = 1 << arg->ui }));
-}
-
-void
-tagex(const Arg *arg)
-{
-	tag(&((Arg) { .ui = 1 << arg->ui }));
-}
-
-void
-toggletagex(const Arg *arg)
-{
-	toggletag(&((Arg) { .ui = 1 << arg->ui }));
-}
-
-void
-tagall(const Arg *arg)
-{
-	tag(&((Arg){.ui = ~0}));
-}
-
-/* signal definitions */
-/* signum must be greater than 0 */
-/* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
-static Signal signals[] = {
-	/* signum           function */
-	{ "focusstack",     focusstack },
-	{ "setmfact",       setmfact },
-	{ "togglebar",      togglebar },
-	{ "incnmaster",     incnmaster },
-	{ "togglefloating", togglefloating },
-	{ "focusmon",       focusmon },
-	{ "tagmon",         tagmon },
-	{ "zoom",           zoom },
-	{ "view",           view },
-	{ "viewall",        viewall },
-	{ "viewex",         viewex },
-	{ "toggleview",     view },
-	{ "toggleviewex",   toggleviewex },
-	{ "tag",            tag },
-	{ "tagall",         tagall },
-	{ "tagex",          tagex },
-	{ "toggletag",      tag },
-	{ "toggletagex",    toggletagex },
-	{ "killclient",     killclient },
-	{ "quit",           quit },
-	{ "setlayout",      setlayout },
-	{ "setlayoutex",    setlayoutex },
-	{ "xrdb",		xrdb },
+	{ ClkTagBar,		0,		Button4,	shiftview,	{.i = -1} },
+	{ ClkTagBar,		0,		Button5,	shiftview,	{.i = 1} },
 };
