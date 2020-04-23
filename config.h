@@ -12,11 +12,11 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int vertpad            = 0;       /* vertical padding of bar */
 static const int sidepad            = 0;       /* horizontal padding of bar */
-static const char *fonts[]          = { "monospace:size=10", "JoyPixels:pixelsize=10:antialias=true:autohint=true"  };
+static const char *fonts[]          = { "monospace:size=12", "JoyPixels:pixelsize=12:antialias=true:autohint=true"  };
 static char dmenufont[]       = "monospace:size=10";
-static char normbgcolor[]           = "#222222";
+static char normbgcolor[]           = "#272822";
 static char normbordercolor[]       = "#444444";
-static char normfgcolor[]           = "#bbbbbb";
+static char normfgcolor[]           = "#f1ebeb";
 static char selfgcolor[]            = "#eeeeee";
 static char selbordercolor[]        = "#005577";
 static char selbgcolor[]            = "#005577";
@@ -27,7 +27,7 @@ static char *colors[][3] = {
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "", "", "", "", "", "6", "7", "8", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -76,10 +76,11 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbordercolor, "-sf", selfgcolor, NULL };
-static const char *termcmd[]  = { "st", NULL };
+//static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbordercolor, "-sf", selfgcolor, NULL };
+static const char *dmenucmd[] = { "rofi", "-show", "run", NULL };
+static const char *termcmd[]  = { "alacritty", NULL };
 static const char scratchpadname[] = "scratchpad";
-static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "120x34", NULL };
+static const char *scratchpadcmd[] = { "alacritty", "-t", scratchpadname, "-g", "120x34", NULL };
 
 #include <X11/XF86keysym.h>
 #include "shiftview.c"
@@ -108,15 +109,16 @@ static Key keys[] = {
 	/* { MODKEY,			XK_BackSpace,	spawn,		SHCMD("") }, */
 	{ MODKEY|ShiftMask,		XK_BackSpace,	spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Reboot computer?\")\" = Yes ] && sudo -A reboot") },
 
-	{ MODKEY,			XK_Tab,		view,		{0} },
+	{ MODKEY,			XK_Tab,		spawn, SHCMD("rofi -show window") },
+	{ MODKEY,			XK_s,		spawn, SHCMD("rofi -show ssh") },
 	/* { MODKEY|ShiftMask,		XK_Tab,		spawn,		SHCMD("") }, */
 	{ MODKEY,			XK_q,		killclient,	{0} },
 	/* { MODKEY|ShiftMask,		XK_q,		spawn,		SHCMD("") }, */
 	{ MODKEY,			XK_w,		spawn,		SHCMD("$BROWSER") },
-	{ MODKEY|ShiftMask,		XK_w,		spawn,		SHCMD("st -e sudo nmtui") },
-	{ MODKEY,			XK_e,		spawn,		SHCMD("st -e neomutt ; pkill -RTMIN+12 dwmblocks; rmdir ~/.abook") },
+	{ MODKEY|ShiftMask,		XK_w,		spawn,		SHCMD("alacritty -e sudo nmtui") },
+	{ MODKEY,			XK_e,		spawn,		SHCMD("alacritty -e neomutt ; pkill -RTMIN+12 dwmblocks; rmdir ~/.abook") },
 	{ MODKEY|ShiftMask,		XK_e,		spawn,		SHCMD("tutorialvids") },
-	{ MODKEY,			XK_r,		spawn,		SHCMD("st -e lf") },
+	{ MODKEY,			XK_r,		spawn,		SHCMD("alacritty -e lf") },
 	/* { MODKEY|ShiftMask,		XK_r,		spawn,		SHCMD("") }, */
 	{ MODKEY,			XK_t,		setlayout,	{.v = &layouts[0]} },
 	/* { MODKEY|ShiftMask,		XK_t,		spawn,		SHCMD("") }, */
@@ -137,7 +139,7 @@ static Key keys[] = {
 	{ MODKEY,			XK_backslash,		view,		{0} },
 	/* { MODKEY|ShiftMask,		XK_backslash,		spawn,		SHCMD("") }, */
 
-	{ MODKEY,			XK_a,		spawn,		SHCMD("st -e lmc control") },
+	{ MODKEY,			XK_a,		spawn,		SHCMD("alacritty -e lmc control") },
 	/* { MODKEY|ShiftMask,		XK_a,		spawn,		SHCMD("") }, */
 	{ MODKEY,			XK_s,		togglesticky,	{0} },
 	/* { MODKEY|ShiftMask,		XK_s,		spawn,		SHCMD("") }, */
@@ -159,21 +161,21 @@ static Key keys[] = {
 
 	{ MODKEY,			XK_z,		incrgaps,	{.i = +1 } },
 	{ MODKEY|ShiftMask,		XK_z,		incrgaps,	{.i = -1 } },
-	{ MODKEY,			XK_x,		spawn,		SHCMD("slock & xset dpms force off; mpc pause ; pauseallmpv") },
+	{ MODKEY,			XK_x,		spawn,		SHCMD("betterlockscreen -l blur; mpc pause ; pauseallmpv") },
 	{ MODKEY|ShiftMask,		XK_x,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Shutdown computer?\")\" = Yes ] && sudo -A shutdown -h now") },
 	/* { MODKEY,			XK_c,		spawn,		SHCMD("") }, */
 	{ MODKEY|ShiftMask,		XK_c,		spawn,		SHCMD("mpv --no-cache --no-osc --no-input-default-bindings --input-conf=/dev/null --title=mpvfloat $(ls /dev/video[0,2,4,6,8] | tail -n 1)") },
-	{ MODKEY,			XK_v,		spawn,		SHCMD("st -e $EDITOR -c \"VimwikiIndex\"") },
+	{ MODKEY,			XK_v,		spawn,		SHCMD("alacritty -e $EDITOR -c \"VimwikiIndex\"") },
 	{ MODKEY|ShiftMask,		XK_v,		spawn,		SHCMD("{ killall xcompmgr || setsid xcompmgr & } ; xwallpaper --zoom ~/.config/wall.png") },
 	{ MODKEY,			XK_b,		togglebar,	{0} },
 	{ MODKEY|ShiftMask,		XK_b,		spawn,		SHCMD("hover left") },
-	{ MODKEY,			XK_n,		spawn,		SHCMD("st -e newsboat; pkill -RTMIN+6 dwmblocks") },
+	{ MODKEY,			XK_n,		spawn,		SHCMD("alacritty -e newsboat; pkill -RTMIN+6 dwmblocks") },
 	{ MODKEY|ShiftMask,		XK_n,		spawn,		SHCMD("hover right") },
-	{ MODKEY,			XK_m,		spawn,		SHCMD("st -e ncmpcpp") },
+	{ MODKEY,			XK_m,		spawn,		SHCMD("alacritty -e ncmpcpp") },
 	{ MODKEY|ShiftMask,		XK_m,		spawn,		SHCMD("lmc toggle") },
-	{ MODKEY,			XK_comma,	spawn,		SHCMD("mpc prev") },
-	{ MODKEY|ShiftMask,		XK_comma,	spawn,		SHCMD("mpc seek 0%") },
-	{ MODKEY,			XK_period,	spawn,		SHCMD("mpc next") },
+	{ 0,			XK_F2,	spawn,		SHCMD("mpc prev") },
+	/*{ MODKEY|ShiftMask,		XK_comma,	spawn,		SHCMD("mpc seek 0%") },*/
+	{ 0,			XK_F3,	spawn,		SHCMD("mpc next") },
 	{ MODKEY|ShiftMask,		XK_period,	spawn,		SHCMD("mpc repeat") },
 
 	{ MODKEY,			XK_Page_Up,	shiftview,	{ .i = -1 } },
@@ -184,10 +186,10 @@ static Key keys[] = {
 	{ MODKEY,			XK_F2,		quit,		{0} },
 	{ MODKEY,			XK_F3,		spawn,		SHCMD("displayselect") },
 	{ MODKEY,			XK_F4,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && sudo -A zzz") },
-	{ MODKEY,			XK_F5,		xrdb,		{.v = NULL } },
-	{ MODKEY,			XK_F6,		spawn,		SHCMD("torwrap") },
-	{ MODKEY,			XK_F7,		spawn,		SHCMD("td-toggle") },
-	{ MODKEY,			XK_F8,		spawn,		SHCMD("mailsync") },
+	{ MODKEY,			XK_F5,		spawn,		SHCMD("xbacklight -5")  },
+	{ MODKEY,			XK_F6,		spawn,		SHCMD("xbacklight +5") },
+	//{ MODKEY,			XK_F7,		spawn,		SHCMD("td-toggle") },
+	//{ MODKEY,			XK_F8,		spawn,		SHCMD("mailsync") },
 	{ MODKEY,			XK_F9,		spawn,		SHCMD("dmenumount") },
 	{ MODKEY,			XK_F10,		spawn,		SHCMD("dmenuumount") },
 	/* { MODKEY,			XK_F11,		spawn,		SHCMD("") }, */
@@ -212,16 +214,16 @@ static Key keys[] = {
 	{ 0, XF86XK_AudioStop,		spawn,		SHCMD("mpc stop") },
 	{ 0, XF86XK_AudioRewind,	spawn,		SHCMD("mpc seek -10") },
 	{ 0, XF86XK_AudioForward,	spawn,		SHCMD("mpc seek +10") },
-	{ 0, XF86XK_AudioMedia,		spawn,		SHCMD("st -e ncmpcpp") },
+	{ 0, XF86XK_AudioMedia,		spawn,		SHCMD("alacritty -e ncmpcpp") },
 	{ 0, XF86XK_PowerOff,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Shutdown computer?\")\" = Yes ] && sudo -A shutdown -h now") },
-	{ 0, XF86XK_Calculator,		spawn,		SHCMD("st -e bc -l") },
+	{ 0, XF86XK_Calculator,		spawn,		SHCMD("alacritty -e bc -l") },
 	{ 0, XF86XK_Sleep,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Hibernate computer?\")\" = Yes ] && sudo -A zzz") },
 	{ 0, XF86XK_WWW,		spawn,		SHCMD("$BROWSER") },
-	{ 0, XF86XK_DOS,		spawn,		SHCMD("st") },
+	{ 0, XF86XK_DOS,		spawn,		SHCMD("alacritty") },
 	{ 0, XF86XK_ScreenSaver,	spawn,		SHCMD("slock & xset dpms force off; mpc pause; pauseallmpv") },
-	{ 0, XF86XK_TaskPane,		spawn,		SHCMD("st -e htop") },
-	{ 0, XF86XK_Mail,		spawn,		SHCMD("st -e neomutt ; pkill -RTMIN+12 dwmblocks") },
-	{ 0, XF86XK_MyComputer,		spawn,		SHCMD("st -e lf /") },
+	{ 0, XF86XK_TaskPane,		spawn,		SHCMD("alacritty -e htop") },
+	{ 0, XF86XK_Mail,		spawn,		SHCMD("alacritty -e neomutt ; pkill -RTMIN+12 dwmblocks") },
+	{ 0, XF86XK_MyComputer,		spawn,		SHCMD("alacritty -e lf /") },
 	/* { 0, XF86XK_Battery,		spawn,		SHCMD("") }, */
 	{ 0, XF86XK_Launch1,		spawn,		SHCMD("xset dpms force off") },
 	{ 0, XF86XK_TouchpadToggle,	spawn,		SHCMD("(synclient | grep 'TouchpadOff.*1' && synclient TouchpadOff=0) || synclient TouchpadOff=1") },
@@ -230,10 +232,10 @@ static Key keys[] = {
 
 	/* { MODKEY,                       XK_space,  setlayout,      {0} }, */
 
-	/* { MODKEY,                       XK_comma,  focusmon,       {.i = -1 } }, */
-	/* { MODKEY,                       XK_period, focusmon,       {.i = +1 } }, */
-	/* { MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } }, */
-	/* { MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } }, */
+	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
+	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 
 	/* { MODKEY|Mod4Mask,              XK_h,      incrgaps,       {.i = +1 } }, */
 	/* { MODKEY|Mod4Mask,              XK_l,      incrgaps,       {.i = -1 } }, */
@@ -261,7 +263,7 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          SHCMD("st -e statusbarinfo") },
+	{ ClkStatusText,        0,              Button2,        spawn,          SHCMD("alacritty -e statusbarinfo") },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
