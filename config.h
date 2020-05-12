@@ -181,8 +181,8 @@ static Key keys[] = {
 	{ MODKEY,			XK_Return,	spawn,		{.v = termcmd } },
 	{ MODKEY|ShiftMask,		XK_Return,	togglescratch,	{.ui = 0} },
 
-	{ MODKEY,			XK_z,		incrgaps,	{.i = +1 } },
-	{ MODKEY|ShiftMask,		XK_z,		incrgaps,	{.i = -1 } },
+	{ MODKEY,			XK_z,		incrgaps,	{.i = +3 } },
+	{ MODKEY|ShiftMask,		XK_z,		incrgaps,	{.i = -3 } },
 	{ MODKEY,			XK_x,		spawn,		SHCMD("betterlockscreen -l blur; mpc pause ; pauseallmpv") },
 	{ MODKEY|ShiftMask,		XK_x,		spawn,		SHCMD("[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Shutdown computer?\")\" = Yes ] && sudo -A shutdown -h now") },
 	/* { MODKEY,			XK_c,		spawn,		SHCMD("") }, */
