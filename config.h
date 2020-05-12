@@ -177,7 +177,7 @@ static Key keys[] = {
 	{ MODKEY,			XK_v,		spawn,		SHCMD("alacritty -e $EDITOR -c \"VimwikiIndex\"") },
 	{ MODKEY|ShiftMask,		XK_v,		spawn,		SHCMD("{ killall xcompmgr || setsid xcompmgr & } ; xwallpaper --zoom ~/.config/wall.png") },
 	{ MODKEY,			XK_b,		togglebar,	{0} },
-	{ MODKEY|ShiftMask,		XK_b,		spawn,		SHCMD("hover left") },
+	{ MODKEY|ShiftMask,		XK_b, spawn, SHCMD("rofi -modi blocks -show blocks") },
 	{ MODKEY,			XK_n,		spawn,		SHCMD("alacritty -e newsboat; pkill -RTMIN+6 dwmblocks") },
 	{ MODKEY|ShiftMask,		XK_n,		spawn,		SHCMD("hover right") },
 	{ MODKEY,			XK_m,		spawn,		SHCMD("alacritty -e ncmpcpp") },
