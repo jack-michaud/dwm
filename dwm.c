@@ -2316,7 +2316,12 @@ updatestatus(void)
 		strcpy(stext, "dwm-"VERSION);
 	else
 		copyvalidchars(stext, rawstext);
-	drawbar(selmon);
+
+  Monitor* m = mons;
+  do {
+    drawbar(m);
+    m = m->next;
+  } while (m);
 }
 
 void
