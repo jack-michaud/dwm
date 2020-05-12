@@ -857,15 +857,10 @@ drawbar(Monitor *m)
 	Client *c;
 
 	/* draw status first so it can be overdrawn by tags later */
-  /* draw status on all monitors */
-  Monitor* original = m;
-	do { 
-		drw_setscheme(drw, scheme[SchemeNorm]);
-		sw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
-		drw_text(drw, m->ww - sw, 0, sw, bh, 0, stext, 0);
-    m = m->next;
-	} while (m);
-  m = original;
+  /* draw status on any monitor */
+	drw_setscheme(drw, scheme[SchemeNorm]);
+	sw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
+	drw_text(drw, m->ww - sw, 0, sw, bh, 0, stext, 0);
 
 	for (c = m->clients; c; c = c->next) {
 		occ |= c->tags == 255 ? 0 : c->tags;
@@ -2317,11 +2312,9 @@ updatestatus(void)
 	else
 		copyvalidchars(stext, rawstext);
 
-  Monitor* m = mons;
-  do {
+  Monitor* m;
+	for (m = mons; m; m = m->next)
     drawbar(m);
-    m = m->next;
-  } while (m);
 }
 
 void
