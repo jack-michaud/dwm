@@ -256,6 +256,7 @@ static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
 static void togglesticky(const Arg *arg);
+static void togglepetwindow(const Arg *arg);
 static void togglefullscr(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -1994,6 +1995,30 @@ togglesticky(const Arg *arg)
 		return;
 	selmon->sel->issticky = !selmon->sel->issticky;
 	arrange(selmon);
+}
+
+void
+togglepetwindow(const Arg *arg)
+{
+	if (!selmon->sel)
+		return;
+  if (selmon->sel->isfullscreen)
+    togglefullscr(arg);
+  togglefloating(arg);
+  togglesticky(arg);
+  // assume if a client is floating and sticky, its a pet
+  if (selmon->sel->isfloating && selmon->sel->issticky) {
+    // Move to bottom right
+    int newheight, newwidth;
+    newwidth = selmon->ww / 3;
+    newheight = selmon->wh / 3;
+    resize(selmon->sel,
+        selmon->ww - newwidth - 10,
+        selmon->wh - newheight - 10,
+        newwidth,
+        newheight,
+        0);
+  }
 }
 
 void
