@@ -148,7 +148,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_i,		setlayout,	{.v = &layouts[7]} },
 	{ MODKEY,			XK_o,		incnmaster,     {.i = +1 } },
 	{ MODKEY|ShiftMask,		XK_o,		incnmaster,     {.i = -1 } },
-	{ MODKEY,			XK_p,			spawn,		SHCMD("mpc toggle") },
+	{ MODKEY,			XK_p,			spawn,		SHCMD("pick") },
 	{ MODKEY|ShiftMask,		XK_p,			togglepetwindow,		{0} },
 	//{ MODKEY|ShiftMask,		XK_p,			spawn,		SHCMD("mpc pause ; pauseallmpv") },
 	{ MODKEY,			XK_bracketleft,		spawn,		SHCMD("mpc seek -10") },
