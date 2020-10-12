@@ -2236,6 +2236,8 @@ updategeom(void)
 					m->my = m->wy = unique[i].y_org;
 					m->mw = m->ww = unique[i].width;
 					m->mh = m->wh = unique[i].height;
+          if (unique[i].width < unique[i].height)
+            m->gappov = gappovv;
 					updatebarpos(m);
 				}
 		} else { /* less monitors available nn < n */
@@ -2264,6 +2266,8 @@ updategeom(void)
 			dirty = 1;
 			mons->mw = mons->ww = sw;
 			mons->mh = mons->wh = sh;
+      if (mons->mw < mons->wh)
+        mons->gappov = gappovv;
 			updatebarpos(mons);
 		}
 	}
