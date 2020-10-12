@@ -1638,6 +1638,10 @@ sendmon(Client *c, Monitor *m)
 	c->mon = m;
 	c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 	attach(c);
+  if (c->isfullscreen) {
+    setfullscreen(c, 0);
+    setfullscreen(c, 1);
+  }
 	attachstack(c);
 	focus(NULL);
 	arrange(NULL);
