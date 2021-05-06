@@ -14,7 +14,7 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int vertpad            = 0;       /* vertical padding of bar */
 static const int sidepad            = 0;       /* horizontal padding of bar */
-static const char *fonts[]          = { "Iosevka Fixed", "Font Awesome 5 Pro Solid" };
+static const char *fonts[]          = { "Iosevka", "Font Awesome 5 Pro Solid" };
 static char dmenufont[]       = "monospace:size=10";
 static char normbgcolor[]           = "#272822";
 static char normbordercolor[]       = "#444444";
