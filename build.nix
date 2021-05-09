@@ -8,6 +8,7 @@ stdenv.mkDerivation {
     xorg.libX11
     xorg.libXft
     xorg.libXinerama
+    iosevka
   ];
 
   installPhase = ''
@@ -15,5 +16,5 @@ stdenv.mkDerivation {
     mkdir -p $out/bin/
     mv dwm $out/bin/
   '';
-  
+
 }
