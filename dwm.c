@@ -1979,7 +1979,7 @@ togglefloating(const Arg *arg)
 	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
 		return;
   if (selmon->sel->ispet) {
-    selmon->sel->ispet = false;
+    selmon->sel->ispet = 0;
     togglesticky(arg);
   }
 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
@@ -2016,7 +2016,7 @@ togglepetwindow(const Arg *arg)
   togglesticky(arg);
   // assume if a client is floating and sticky, its a pet
   if (selmon->sel->isfloating && selmon->sel->issticky) {
-    selmon->sel->ispet = true;
+    selmon->sel->ispet = 1;
     // Move to bottom right
     int newheight, newwidth;
     newwidth = selmon->ww / 3;
