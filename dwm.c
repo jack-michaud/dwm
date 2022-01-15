@@ -119,7 +119,7 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
-	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, issticky;
+	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, issticky, ispet;
 	pid_t pid;
 	Client *next;
 	Client *snext;
@@ -1978,6 +1978,10 @@ togglefloating(const Arg *arg)
 		return;
 	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
 		return;
+  if (selmon->sel->ispet) {
+    selmon->sel->ispet = false;
+    togglesticky(arg);
+  }
 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
 	if (selmon->sel->isfloating)
 		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
@@ -2012,6 +2016,7 @@ togglepetwindow(const Arg *arg)
   togglesticky(arg);
   // assume if a client is floating and sticky, its a pet
   if (selmon->sel->isfloating && selmon->sel->issticky) {
+    selmon->sel->ispet = true;
     // Move to bottom right
     int newheight, newwidth;
     newwidth = selmon->ww / 3;
